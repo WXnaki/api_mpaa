@@ -1,0 +1,155 @@
+const express = require('express');
+
+const router = express.Router();
+
+const Snorlax = require('../models/snorlax');
+
+// Rota para obter todos os contatos
+
+router.get('/', async (req, res) => {
+
+try {
+
+const snorlax = await Snorlax.find();
+
+res.json(snorlax);
+
+} catch (err) {
+
+res.status(500).json({ message: err.message });
+
+}
+
+});
+
+// Rota para obter um contato por ID
+
+router.get('/:id', getSnorlax, (req, res) => {
+
+res.json(res.snorlax);
+
+});
+
+// Rota para criar um novo contato
+
+router.post('/', async (req, res) => {
+
+const snorlax = new Snorlax({
+
+nome: req.body.nome,
+
+email: req.body.tamanho,
+
+telefone: req.body.peso,
+
+endereco: req.body.idade,
+
+foto: req.body.foto,
+
+});
+
+try {
+
+const newSnorlax = await snorlax.save();
+
+res.status(201).json(newSnorlax);
+
+} catch (err) {
+
+res.status(400).json({ message: err.message });
+
+}
+
+});
+
+// Rota para atualizar um contato por ID
+
+router.put('/:id', getSnorlax, async (req, res) => {
+
+if (req.body.nome != null) {
+
+res.snorlax.nome = req.body.nome;
+
+}
+
+if (req.body.tamanho != null) {
+
+res.snorlax.tamanho = req.body.tamanho;
+
+}
+
+if (req.body.peso != null) {
+
+res.snorlax.peso = req.body.peso;
+
+}
+
+if (req.body.idade != null) {
+
+res.snorlax.idade = req.body.idade;
+
+}
+
+if (req.body.foto != null) {
+
+res.snorlax.foto = req.body.foto;
+
+}
+
+try {
+
+const updatedSnorlax = await res.snorlax.save();
+
+res.json(updatedSnorlax);
+
+} catch (err) {
+
+res.status(400).json({ message: err.message });
+
+}
+
+});
+
+// Rota para excluir um contato por ID
+
+router.delete('/:id', getSnorlax, async (req, res) => {
+
+try {
+
+await res.snorlax.deleteOne();
+
+res.json({ message: 'snorlax excluído com sucesso!' });
+
+} catch (err) {
+
+res.status(500).json({ message: err.message });
+
+}
+
+});
+
+async function getSnorlax(req, res, next) {
+
+try {
+
+const snorlax = await Snorlax.findById(req.params.id);
+
+if (snorlax == null) {
+
+return res.status(404).json({ message: 'snorlax não encontrado' });
+
+}
+
+res.snorlax = snorlax;
+
+next();
+
+} catch (err) {
+
+return res.status(500).json({ message: err.message });
+
+}
+
+}
+
+module.exports = router;
